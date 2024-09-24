@@ -2,20 +2,20 @@
 
 ## Project: Game of Life
 
-### Tasks
+### Notes:
 
-- [ ] Game Logic, no UI just coords and booleans
-- [ ] UI - Map game to Coords
+This is a functioning version of the game of life
+It has a UI and will increment and progress
 
-#### Notes
-Create Game test fails if takes too long which happens with large numbers
-Remember to restrict how large it can be
+It needs testing and will likely benefit form refactoring and further separation of concerns. UI feels like its doing a lot of heavy lifting that could potentially be done in main or by another class
 
-
-Use Tkinter
-
-2 windows
-
-One for the game and the other for the controls
-
-Pause Go Faster Clear Rules
+### Features to Add
+- Click and Drag to Select (This has been implemented but it is terrible and needs a rethink. However it will do for now)
+- Keep a cout of the generations for each run
+- Allow the control of the grid size while it is open
+- Control the rules of the game
+- COntrol the colours of the layout
+- Control the speed of the game
+- Allow preset configurations to be loaded
+- Allow configurations to be saved/return to starting conditions
+- Use Arrow Keys to Increment

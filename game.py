@@ -33,9 +33,9 @@ class Game():
             output.append((x, y))
         return output
     
-    # def set_conditions(self, coords):
-    #     for coord in coords:
-    #         self.grid[coord]['alive'] = True
+    def set_conditions(self, coords, bool):
+        for coord in coords:
+            self.grid[coord]['alive'] = bool
     
     def cell_tick(self, coord):
         neighbours = self.get_neighbours(coord)
