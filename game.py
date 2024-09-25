@@ -1,15 +1,17 @@
 from itertools import product
-from rules import Rules
 from pprint import pprint
 
 class Game():
-    def __init__(self, x, y):
+    def __init__(self, x, y, ruleset = {0: False, 1: False, 2: None, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False}, pattern = None):
         self.x = x
         self.y = y
         self.grid = self.create_grid()
-        self.alive = set()
         self.tick_scope = set()
-        self.ruleset = {0: False, 1: False, 2: None, 3: True, 4: False, 5: False, 6: False, 7: False, 8: True}
+        self.ruleset = ruleset
+        if pattern:
+            self.alive = set(pattern)
+        else:
+            self.alive = set()
     
     def create_grid(self):
         x_range = list(range(self.x))
@@ -19,6 +21,8 @@ class Game():
             grid[coord] = None
         return grid
     
+
+    #! Implement a switch to turn on or off world wrapping
     def get_neighbours(self, coord):
         x, y = coord
         neighbours = [(x - 1, y - 1), (x - 1, y), (x - 1, y + 1), (x, y - 1), 
