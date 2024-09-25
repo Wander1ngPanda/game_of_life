@@ -1,4 +1,5 @@
 from itertools import product
+from rules import Rules
 from pprint import pprint
 
 class Game():
@@ -8,7 +9,7 @@ class Game():
         self.grid = self.create_grid()
         self.alive = set()
         self.tick_scope = set()
-        self.ruleset = {0: False, 1: False, 2: None, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False}
+        self.ruleset = {0: False, 1: False, 2: None, 3: True, 4: False, 5: False, 6: False, 7: False, 8: True}
     
     def create_grid(self):
         x_range = list(range(self.x))

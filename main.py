@@ -1,16 +1,14 @@
-import time
 from game import Game
 from ui import UI
-import os
+from setup import Setup
+import tkinter as tk
 
+def main():
+    setup = Setup()
+    x, y, cell_size = setup.get_dimensions()
+    UI(Game(x, y), cell_size)
 
-
-game = Game(40, 20)
-ui = UI(game, 20)
-
-    
-
-
+main()
         
 
 

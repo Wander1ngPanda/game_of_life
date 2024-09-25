@@ -10,8 +10,7 @@ It has a UI and will increment and progress
 It needs testing and will likely benefit form refactoring and further separation of concerns. UI feels like its doing a lot of heavy lifting that could potentially be done in main or by another class
 
 ### Features to Add
-- Click and Drag to Select (This has been implemented but it is terrible and needs a rethink. However it will do for now)
-- Keep a cout of the generations for each run
+- Keep a count of the generations for each run
 - Allow the control of the grid size while it is open
 - Control the rules of the game
 - COntrol the colours of the layout

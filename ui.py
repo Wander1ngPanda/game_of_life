@@ -20,6 +20,7 @@ class UI():
         controller_window = tk.Toplevel(self.game_window)
         controller_window.transient(self.game_window)
         controller_window.title('Controls')
+    
 
         self.start_game_button = tk.Button(controller_window, text='Play', command=self.start_game)
         self.start_game_button.pack()
@@ -27,8 +28,13 @@ class UI():
         pause_game_button = tk.Button(controller_window, text='Pause', command=self.pause_game)
         pause_game_button.pack()
 
+        self.increment_game_button = tk.Button(controller_window, text='Increment', command=self.increment_game)
+        self.increment_game_button.pack()
+
         self.reset_game_button = tk.Button(controller_window, text='Reset', command=self.reset_game)
         self.reset_game_button.pack()
+
+        
 
         self.game_canvas = tk.Canvas(self.game_window, width=self.X * self.cell_size, height=self.Y * self.cell_size)
         
@@ -97,10 +103,16 @@ class UI():
             self.start_game_button["state"] = "active"
 
     def reset_game(self):
-        self.pause_game()    
+        if self.game_loop:
+            self.pause_game()    
         self.game.alive.clear()
         self.draw_grid()
-        
+
+    def increment_game(self):
+        self.pause_game()
+        self.game.grid_tick()
+        self.draw_grid()
+
     def draw_grid(self, initial=False):
         for coord in self.game.tick_scope:
             cell = self.game.grid[coord]
