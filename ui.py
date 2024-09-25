@@ -1,4 +1,5 @@
 from pprint import pprint
+import os
 import tkinter as tk
 
 class UI():
@@ -8,8 +9,10 @@ class UI():
         self.cell_size = cell_size
         self.game = game
         
+
         self.game_loop = None
         self.selecting = False
+        self.informed = False
 
         self.game_window = tk.Tk()
         self.game_window.title("Conway's Game of Life")
@@ -30,24 +33,17 @@ class UI():
         self.game_canvas = tk.Canvas(self.game_window, width=self.X * self.cell_size, height=self.Y * self.cell_size)
         
         
-        
-        
-        
         for coord in self.game.grid.keys():
             x, y = coord
-            self.game.grid[coord]['cell'] = self.game_canvas.create_rectangle(
-                                                                    x*self.cell_size,
-                                                                    y*self.cell_size,
-                                                                    x*self.cell_size + self.cell_size,
-                                                                    y*self.cell_size + self.cell_size,
+            self.game.grid[coord] = self.game_canvas.create_rectangle(
+                                                                    x * self.cell_size,
+                                                                    y * self.cell_size,
+                                                                    x * self.cell_size + self.cell_size,
+                                                                    y * self.cell_size + self.cell_size,
                                                                     fill="black"
                                                                     )
-            self.game_canvas.tag_bind(self.game.grid[coord]['cell'], "<B1-Motion>", self.select_cells)
-            self.game_canvas.tag_bind(self.game.grid[coord]['cell'], "<Button-1>", self.select_cells)
-
-
-
-
+            self.game_canvas.tag_bind(self.game.grid[coord], "<B1-Motion>", self.select_cells)
+            self.game_canvas.tag_bind(self.game.grid[coord], "<Button-1>", self.select_cells)
 
         self.game_canvas.pack()
         self.game_window.mainloop()
@@ -57,19 +53,33 @@ class UI():
         return (x//self.cell_size, y//self.cell_size)
     
     def select_cells(self, event):
-        if not self.selecting:
-            self.selecting = True
+        try:
             x, y = self.get_coords(event.x, event.y)
             cell = self.game.grid[(x, y)]
-            if cell['alive']:
-                self.game_canvas.itemconfig(cell['cell'], fill='black')
-            else:
-                self.game_canvas.itemconfig(cell['cell'], fill='white')
-            cell['alive'] = not cell['alive']
-            self.game_window.after(35, self.reset_selecting)
+            if self.selecting != cell:
+                self.selecting = cell
+                if (x,y) in self.game.alive:
+                    self.game_canvas.itemconfig(cell, fill='black')
+                    self.game.alive.remove((x, y))
+                else:
+                    self.game_canvas.itemconfig(cell, fill='white')
+                    self.game.alive.add((x, y))
+        except KeyError as k:
+            if not self.informed:
+                print('Have you tried painting between the lines. Keep it in the window')
+                self.informed = True
+
+        finally:
+            self.game_window.after(1000, self.reset_selecting)
+            self.game_window.after(10000, self.reset_informed)
+            
     
     def reset_selecting(self):
         self.selecting = False
+
+    def reset_informed(self):
+        self.informed = False
+
 
 
     def start_game(self):
@@ -88,13 +98,14 @@ class UI():
 
     def reset_game(self):
         self.pause_game()    
-        self.game.set_conditions(self.game.grid.keys(), False)
+        self.game.alive.clear()
         self.draw_grid()
         
-    def draw_grid(self):
-        for coord in self.game.grid:
+    def draw_grid(self, initial=False):
+        for coord in self.game.tick_scope:
             cell = self.game.grid[coord]
-            if cell['alive']:
-                self.game_canvas.itemconfig(cell['cell'], fill='white')
+            if coord in self.game.alive:
+                self.game_canvas.itemconfig(cell, fill='white')
             else:
-                self.game_canvas.itemconfig(cell['cell'], fill='black')
+                self.game_canvas.itemconfig(cell, fill='black')
+

@@ -5,8 +5,8 @@ import os
 
 
 
-game = Game(100, 30)
-ui = UI(game, 10)
+game = Game(40, 20)
+ui = UI(game, 20)
 
     
 
