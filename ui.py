@@ -1,44 +1,62 @@
-from pprint import pprint
-import os
 import tkinter as tk
+from tkinter import ttk
+from presets import Presets
+import os
+
 
 class UI():
     def __init__(self, game, cell_size):
+        #Useful Variables
         self.X = game.x
         self.Y = game.y
         self.cell_size = cell_size
         self.game = game
-        
-
         self.game_loop = None
         self.selecting = False
         self.informed = False
+        self.presets = Presets()
 
+        #UI Architecture - Main Game Window
         self.game_window = tk.Tk()
         self.game_window.title("Conway's Game of Life")
 
-        controller_window = tk.Toplevel(self.game_window)
-        controller_window.transient(self.game_window)
-        controller_window.title('Controls')
+        #UI Architecture - Control Panel
+        self.controller_window = tk.Toplevel(self.game_window)
+        self.ruleset_options = tk.StringVar()
+        self.speed_value = tk.StringVar()
+        self.speed_value.set("50")
+        self.speed = int(self.speed_value.get())
+        self.controller_window.transient(self.game_window)
+        self.controller_window.title('Controls')
     
-
-        self.start_game_button = tk.Button(controller_window, text='Play', command=self.start_game)
+        self.start_game_button = tk.Button(self.controller_window, text='Play', command=self.start_game)
         self.start_game_button.pack()
 
-        pause_game_button = tk.Button(controller_window, text='Pause', command=self.pause_game)
+        pause_game_button = tk.Button(self.controller_window, text='Pause', command=self.pause_game)
         pause_game_button.pack()
 
-        self.increment_game_button = tk.Button(controller_window, text='Increment', command=self.increment_game)
+        self.increment_game_button = tk.Button(self.controller_window, text='Increment', command=self.increment_game)
         self.increment_game_button.pack()
 
-        self.reset_game_button = tk.Button(controller_window, text='Reset', command=self.reset_game)
+        self.reset_game_button = tk.Button(self.controller_window, text='Reset', command=self.reset_game)
         self.reset_game_button.pack()
 
+        self.game_speed_label = tk.Label(self.controller_window, text='Game Speed').pack()
+        self.game_speed_entry = tk.Entry(self.controller_window, textvariable=self.speed_value).pack()
+
+
+        self.ruleset_label = tk.Label(self.controller_window, text='Ruleset').pack()
+        ruleset_dropdown = ttk.Combobox(self.controller_window, textvariable = self.ruleset_options)
+        ruleset_dropdown['values'] = tuple(self.get_avaliable_rulesets())
+        ruleset_dropdown.pack()
+        self.current_ruleset_label = tk.Label(self.controller_window, text='Default')
+        self.current_ruleset_label.pack()
+        ruleset_dropdown.bind('<<ComboboxSelected>>', self.get_preset_rules)
         
 
+
         self.game_canvas = tk.Canvas(self.game_window, width=self.X * self.cell_size, height=self.Y * self.cell_size)
-        
-        
+            
         for coord in self.game.grid.keys():
             x, y = coord
             if coord in self.game.alive:
@@ -82,7 +100,7 @@ class UI():
         finally:
             self.game_window.after(1000, self.reset_selecting)
             self.game_window.after(10000, self.reset_informed)
-            
+        
     
     def reset_selecting(self):
         self.selecting = False
@@ -90,15 +108,12 @@ class UI():
     def reset_informed(self):
         self.informed = False
 
-
-
     def start_game(self):
         self.game.grid_tick()
         self.draw_grid()
         if self.game_loop:
             self.start_game_button["state"] = "disabled"
-        self.game_loop = self.game_window.after(50, self.start_game)
-
+        self.game_loop = self.game_window.after(self.speed, self.start_game)
 
     def pause_game(self):
         if self.game_loop:
@@ -124,4 +139,20 @@ class UI():
                 self.game_canvas.itemconfig(cell, fill='white')
             else:
                 self.game_canvas.itemconfig(cell, fill='black')
+                
+    def get_preset_rules(self, event):
+        try:
+            self.presets.parse_rules(self.ruleset_options.get())
+            parsed_ruleset = {}
+            rule_name = self.presets.rules['title']
+            ruleset = self.presets.rules['ruleset']
+            for key in ruleset:
+                parsed_ruleset[int(key)] = ruleset[key]
+            self.game.ruleset = parsed_ruleset
+            self.current_ruleset_label.config(text=rule_name)
+            print(self.game.ruleset)
+        except PermissionError as pe:
+            return False
 
+    def get_avaliable_rulesets(self):
+        return os.listdir('presets/rules/')
