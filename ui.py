@@ -150,7 +150,6 @@ class UI():
                 parsed_ruleset[int(key)] = ruleset[key]
             self.game.ruleset = parsed_ruleset
             self.current_ruleset_label.config(text=rule_name)
-            print(self.game.ruleset)
         except PermissionError as pe:
             return False
 
