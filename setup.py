@@ -11,7 +11,6 @@ class Setup():
         self.x = tk.StringVar()
         self.y = tk.StringVar()
         self.cell_size = tk.StringVar()
-        self.ruleset = tk.StringVar()
         self.pattern = tk.StringVar()
 
 
@@ -23,18 +22,12 @@ class Setup():
         x_input = tk.Entry(setup_window, textvariable=self.x)
         y_input = tk.Entry(setup_window, textvariable=self.y)
         cell_size_input = tk.Entry(setup_window, textvariable=self.cell_size)
-        ruleset_label = tk.Label(setup_window, text='Ruleset')
-        ruleset_dropdown = ttk.Combobox(setup_window, textvariable = self.ruleset) 
-        ruleset_dropdown['values'] = tuple(self.get_avaliable_rulesets())
-
         pattern_label = tk.Label(setup_window, text='Pattern')
         pattern_dropdown = ttk.Combobox(setup_window, textvariable=self.pattern)
         pattern_dropdown['values'] = tuple(self.get_avaliable_patterns())
-
-
         start_button = tk.Button(setup_window, text='Start', command=setup_window.destroy)
 
-        for item in [title, dim_label, x_label, y_label, cell_label, x_input, y_input, cell_size_input, start_button, ruleset_label, ruleset_dropdown, pattern_label, pattern_dropdown]:
+        for item in [title, dim_label, x_label, y_label, cell_label, x_input, y_input, cell_size_input, start_button, pattern_label, pattern_dropdown]:
             item.pack()
         
         setup_window.mainloop()
@@ -54,18 +47,7 @@ class Setup():
             cell_size = 20
 
         return (x, y, cell_size)
-    
-    def get_preset_rules(self):
-        try:
-            self.presets.parse_rules(self.ruleset.get())
-            parsed_ruleset = {}
-            ruleset = self.presets.rules['ruleset']
-            for key in ruleset:
-                parsed_ruleset[int(key)] = ruleset[key]
-            return parsed_ruleset
-        except PermissionError as pe:
-            return False
-    
+
     def get_preset_pattern(self):
         try:
             self.presets.parse_pattern(self.pattern.get())
@@ -76,9 +58,7 @@ class Setup():
             return x, y, cell_size, coordinates
         except PermissionError as pe:
             return False
-    
-    def get_avaliable_rulesets(self):
-        return os.listdir('presets/rules/')
+
     
     def get_avaliable_patterns(self):
         return os.listdir('presets/patterns/')

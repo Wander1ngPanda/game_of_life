@@ -11,9 +11,8 @@ def main():
     else:
         x, y, cell_size = setup.get_input_dimensions()
         pattern = False
-    ruleset = setup.get_preset_rules()
     
-    UI(Game(x, y, ruleset=ruleset, pattern=pattern), cell_size)
+    UI(Game(x, y, pattern=pattern), cell_size)
 
 main()
         

@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, simpledialog
 from presets import Presets
+import json
 import os
 
 
@@ -14,6 +15,7 @@ class UI():
         self.game_loop = None
         self.selecting = False
         self.informed = False
+        self.ruleset_path = None
         self.presets = Presets()
 
         #UI Architecture - Main Game Window
@@ -23,9 +25,7 @@ class UI():
         #UI Architecture - Control Panel
         self.controller_window = tk.Toplevel(self.game_window)
         self.ruleset_options = tk.StringVar()
-        self.speed_value = tk.StringVar()
-        self.speed_value.set("50")
-        self.speed = int(self.speed_value.get())
+ 
         self.controller_window.transient(self.game_window)
         self.controller_window.title('Controls')
     
@@ -41,17 +41,16 @@ class UI():
         self.reset_game_button = tk.Button(self.controller_window, text='Reset', command=self.reset_game)
         self.reset_game_button.pack()
 
-        self.game_speed_label = tk.Label(self.controller_window, text='Game Speed').pack()
-        self.game_speed_entry = tk.Entry(self.controller_window, textvariable=self.speed_value).pack()
-
 
         self.ruleset_label = tk.Label(self.controller_window, text='Ruleset').pack()
         ruleset_dropdown = ttk.Combobox(self.controller_window, textvariable = self.ruleset_options)
         ruleset_dropdown['values'] = tuple(self.get_avaliable_rulesets())
         ruleset_dropdown.pack()
-        self.current_ruleset_label = tk.Label(self.controller_window, text='Default')
+        self.current_ruleset_label = tk.Label(self.controller_window, text="Default")
         self.current_ruleset_label.pack()
         ruleset_dropdown.bind('<<ComboboxSelected>>', self.get_preset_rules)
+
+        tk.Button(self.controller_window, text='Save', command=self.save_file).pack()
         
 
 
@@ -113,7 +112,7 @@ class UI():
         self.draw_grid()
         if self.game_loop:
             self.start_game_button["state"] = "disabled"
-        self.game_loop = self.game_window.after(self.speed, self.start_game)
+        self.game_loop = self.game_window.after(50, self.start_game)
 
     def pause_game(self):
         if self.game_loop:
@@ -149,9 +148,43 @@ class UI():
             for key in ruleset:
                 parsed_ruleset[int(key)] = ruleset[key]
             self.game.ruleset = parsed_ruleset
+            self.ruleset_path = self.ruleset_options.get()
             self.current_ruleset_label.config(text=rule_name)
         except PermissionError as pe:
             return False
 
     def get_avaliable_rulesets(self):
         return os.listdir('presets/rules/')
+    
+    def get_game_info(self):
+        return {
+            'width': self.X,
+            'height': self.Y,
+            'cell_size': self.cell_size,
+            'ruleset': self.ruleset_path,
+            'coordinates': [list(coord) for coord in self.game.alive]
+        }
+    
+    def save_file(self):
+        self.pause_game()
+        data = self.get_game_info()
+        path = 'presets/patterns/'
+        file_name = simpledialog.askstring(title='Pattern Title', prompt='Name Pattern:')
+        if file_name not in self.get_avaliable_rulesets() and len(file_name.strip()) > 0:
+            data['pattern_name'] = file_name
+            full_path = path + file_name + '.json'
+            with open(full_path, 'w') as o:
+                json.dump(data, o)
+
+
+        
+
+
+
+
+
+
+
+
+        
+
