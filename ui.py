@@ -41,12 +41,16 @@ class UI():
         
         for coord in self.game.grid.keys():
             x, y = coord
+            if coord in self.game.alive:
+                fill = 'white'
+            else:
+                fill = 'black'
             self.game.grid[coord] = self.game_canvas.create_rectangle(
                                                                     x * self.cell_size,
                                                                     y * self.cell_size,
                                                                     x * self.cell_size + self.cell_size,
                                                                     y * self.cell_size + self.cell_size,
-                                                                    fill="black"
+                                                                    fill=fill
                                                                     )
             self.game_canvas.tag_bind(self.game.grid[coord], "<B1-Motion>", self.select_cells)
             self.game_canvas.tag_bind(self.game.grid[coord], "<Button-1>", self.select_cells)

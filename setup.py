@@ -12,6 +12,7 @@ class Setup():
         self.y = tk.StringVar()
         self.cell_size = tk.StringVar()
         self.ruleset = tk.StringVar()
+        self.pattern = tk.StringVar()
 
 
         title = tk.Label(setup_window, text='Conway''s Game of Life')
@@ -25,11 +26,15 @@ class Setup():
         ruleset_label = tk.Label(setup_window, text='Ruleset')
         ruleset_dropdown = ttk.Combobox(setup_window, textvariable = self.ruleset) 
         ruleset_dropdown['values'] = tuple(self.get_avaliable_rulesets())
-        ruleset_dropdown.current(0)
+
+        pattern_label = tk.Label(setup_window, text='Pattern')
+        pattern_dropdown = ttk.Combobox(setup_window, textvariable=self.pattern)
+        pattern_dropdown['values'] = tuple(self.get_avaliable_patterns())
+
 
         start_button = tk.Button(setup_window, text='Start', command=setup_window.destroy)
 
-        for item in [title, dim_label, x_label, y_label, cell_label, x_input, y_input, cell_size_input, start_button, ruleset_label, ruleset_dropdown]:
+        for item in [title, dim_label, x_label, y_label, cell_label, x_input, y_input, cell_size_input, start_button, ruleset_label, ruleset_dropdown, pattern_label, pattern_dropdown]:
             item.pack()
         
         setup_window.mainloop()
@@ -51,15 +56,32 @@ class Setup():
         return (x, y, cell_size)
     
     def get_preset_rules(self):
-        self.presets.parse_rules(self.ruleset.get())
-        parsed_ruleset = {}
-        ruleset = self.presets.rules['ruleset']
-        for key in ruleset:
-            parsed_ruleset[int(key)] = ruleset[key]
-        return parsed_ruleset
+        try:
+            self.presets.parse_rules(self.ruleset.get())
+            parsed_ruleset = {}
+            ruleset = self.presets.rules['ruleset']
+            for key in ruleset:
+                parsed_ruleset[int(key)] = ruleset[key]
+            return parsed_ruleset
+        except PermissionError as pe:
+            return False
+    
+    def get_preset_pattern(self):
+        try:
+            self.presets.parse_pattern(self.pattern.get())
+            x = self.presets.pattern['width']
+            y = self.presets.pattern['height']
+            cell_size = self.presets.pattern['cell_size']
+            coordinates = [tuple(coord) for coord in self.presets.pattern['coordinates']]
+            return x, y, cell_size, coordinates
+        except PermissionError as pe:
+            return False
     
     def get_avaliable_rulesets(self):
         return os.listdir('presets/rules/')
+    
+    def get_avaliable_patterns(self):
+        return os.listdir('presets/patterns/')
 
 
     

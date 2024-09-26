@@ -2,12 +2,15 @@ from itertools import product
 from pprint import pprint
 
 class Game():
-    def __init__(self, x, y, ruleset = {0: False, 1: False, 2: None, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False}, pattern = None):
+    def __init__(self, x, y, ruleset, pattern):
         self.x = x
         self.y = y
         self.grid = self.create_grid()
         self.tick_scope = set()
-        self.ruleset = ruleset
+        if ruleset:
+            self.ruleset = ruleset
+        else:
+            self.ruleset = {0: False, 1: False, 2: None, 3: True, 4: False, 5: False, 6: False, 7: False, 8: False}
         if pattern:
             self.alive = set(pattern)
         else:
