@@ -13,8 +13,6 @@ class Setup():
         self.cell_size = tk.StringVar()
         self.pattern = tk.StringVar()
 
-
-        title = tk.Label(setup_window, text='Conway''s Game of Life')
         dim_label = tk.Label(setup_window, text='What size game')
         x_label = tk.Label(setup_window, text='Width')
         y_label = tk.Label(setup_window, text='Height')
@@ -22,12 +20,17 @@ class Setup():
         x_input = tk.Entry(setup_window, textvariable=self.x)
         y_input = tk.Entry(setup_window, textvariable=self.y)
         cell_size_input = tk.Entry(setup_window, textvariable=self.cell_size)
-        
         start_button = tk.Button(setup_window, text='Start', command=setup_window.destroy)
 
-        for item in [title, dim_label, x_label, y_label, cell_label, x_input, y_input, cell_size_input, start_button]:
-            item.pack()
-        
+        dim_label.grid(row=0, column=0)
+        x_label.grid(row=1, column=0)
+        x_input.grid(row=1, column=1)
+        y_label.grid(row=2, column=0)
+        y_input.grid(row=2, column=1)
+        cell_label.grid(row=3, column=0)
+        cell_size_input.grid(row=3, column=1)
+        start_button.grid(row=4, columnspan=2)
+
         setup_window.mainloop()
 
     def get_input_dimensions(self):
