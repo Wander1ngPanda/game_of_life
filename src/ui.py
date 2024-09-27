@@ -177,7 +177,6 @@ class UI():
     def get_game_info(self):
         if not self.ruleset_path:
             self.ruleset_path = 'default.json'
-
         print(self.ruleset_path)
         return {
             'width': self.X,
@@ -207,6 +206,8 @@ class UI():
         y = self.presets.pattern['height']
         cell_size = self.presets.pattern['cell_size']
         self.safe_destroy()
+
+        #! Ugly
         UI(Game(x, y, alive), cell_size, self.presets.pattern['ruleset'])
 
     def safe_destroy(self):

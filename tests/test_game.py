@@ -33,3 +33,12 @@ def test_cell_tick():
     assert game.cell_tick((1, 1)) == None
     assert game.cell_tick((0, 0)) == None
     assert game.cell_tick((1, 0)) == True
+
+def test_grid_tick():
+    game = Game(10, 10, [(0, 1), (1, 1), (2, 1)])
+    game.grid_tick()
+    assert (1, 0) in game.alive
+    assert (1, 1) in game.alive
+    assert (1, 2) in game.alive
+    assert (0, 1) not in game.alive
+    assert (2, 1) not in game.alive
