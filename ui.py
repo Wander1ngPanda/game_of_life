@@ -3,10 +3,10 @@ from tkinter import ttk, simpledialog
 from presets import Presets
 import json
 import os
-
+from game import Game
 
 class UI():
-    def __init__(self, game, cell_size):
+    def __init__(self, game, cell_size, ruleset_path):
         #Useful Variables
         self.X = game.x
         self.Y = game.y
@@ -15,8 +15,12 @@ class UI():
         self.game_loop = None
         self.selecting = False
         self.informed = False
-        self.ruleset_path = None
+
+        self.ruleset_path = ruleset_path
         self.presets = Presets()
+        self.presets.parse_rules(ruleset_path)
+        self.ruleset_title = self.presets.rules['title']
+        
 
         #UI Architecture - Main Game Window
         self.game_window = tk.Tk()
@@ -25,6 +29,8 @@ class UI():
         #UI Architecture - Control Panel
         self.controller_window = tk.Toplevel(self.game_window)
         self.ruleset_options = tk.StringVar()
+        self.pattern_options = tk.StringVar()
+        
  
         self.controller_window.transient(self.game_window)
         self.controller_window.title('Controls')
@@ -46,11 +52,17 @@ class UI():
         ruleset_dropdown = ttk.Combobox(self.controller_window, textvariable = self.ruleset_options)
         ruleset_dropdown['values'] = tuple(self.get_avaliable_rulesets())
         ruleset_dropdown.pack()
-        self.current_ruleset_label = tk.Label(self.controller_window, text="Default")
+        self.current_ruleset_label = tk.Label(self.controller_window, text=self.ruleset_title)
         self.current_ruleset_label.pack()
-        ruleset_dropdown.bind('<<ComboboxSelected>>', self.get_preset_rules)
+        ruleset_dropdown.bind('<<ComboboxSelected>>', self.set_preset_rules)
 
-        tk.Button(self.controller_window, text='Save', command=self.save_file).pack()
+        self.pattern_label = tk.Label(self.controller_window, text='Pattern').pack()
+        pattern_dropdown = ttk.Combobox(self.controller_window, textvariable=self.pattern_options)
+        pattern_dropdown['values'] = tuple(self.get_avaliable_patterns())
+        pattern_dropdown.pack()
+        pattern_dropdown.bind('<<ComboboxSelected>>', self.load_pattern)
+
+        tk.Button(self.controller_window, text='Save Current Pattern', command=self.save_file).pack()
         
 
 
@@ -73,6 +85,7 @@ class UI():
             self.game_canvas.tag_bind(self.game.grid[coord], "<Button-1>", self.select_cells)
 
         self.game_canvas.pack()
+        self.set_preset_rules(ruleset_path)
         self.game_window.mainloop()
 
     
@@ -131,7 +144,7 @@ class UI():
         self.game.grid_tick()
         self.draw_grid()
 
-    def draw_grid(self, initial=False):
+    def draw_grid(self):
         for coord in self.game.tick_scope:
             cell = self.game.grid[coord]
             if coord in self.game.alive:
@@ -139,9 +152,13 @@ class UI():
             else:
                 self.game_canvas.itemconfig(cell, fill='black')
                 
-    def get_preset_rules(self, event):
+    def set_preset_rules(self, event):
         try:
-            self.presets.parse_rules(self.ruleset_options.get())
+            if type(event) == str:
+                ruleset_options = event
+            else:
+                ruleset_options = self.ruleset_options.get()
+            self.presets.parse_rules(ruleset_options)
             parsed_ruleset = {}
             rule_name = self.presets.rules['title']
             ruleset = self.presets.rules['ruleset']
@@ -155,6 +172,9 @@ class UI():
 
     def get_avaliable_rulesets(self):
         return os.listdir('presets/rules/')
+    
+    def get_avaliable_patterns(self):
+        return os.listdir('presets/patterns/')
     
     def get_game_info(self):
         return {
@@ -176,7 +196,18 @@ class UI():
             with open(full_path, 'w') as o:
                 json.dump(data, o)
 
+    def load_pattern(self, event):
+        self.reset_game()
+        self.presets.parse_pattern(self.pattern_options.get())
+        alive = [tuple(coord) for coord in self.presets.pattern['coordinates']]
+        self.set_preset_rules(self.presets.pattern['ruleset'])
+        x = self.presets.pattern['width']
+        y = self.presets.pattern['height']
+        cell_size = self.presets.pattern['cell_size']
+        self.game_window.destroy()
+        UI(Game(x, y, alive), cell_size, self.presets.pattern['ruleset'])
 
+        
         
 
 
