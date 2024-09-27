@@ -21,6 +21,7 @@ The control panel lets the game run
 - Save allow the current screen to be saved as a json file to be later loaded
 
 ### Tests:
+- Try to implement Hypothesis
 - Need to add unit testing for game.py
     - Game Logic (if one thing is tested it should be this)
 
