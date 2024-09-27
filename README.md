@@ -1,6 +1,4 @@
-# TODO List
-
-## Project: Game of Life
+# Project: Game of Life
 
 ### Notes:
 
@@ -28,4 +26,11 @@ The control panel lets the game run
 ### Features to Add
 - Keep a count of the generations for each run
 - Allow the control of the grid size while it is open
+
+### Current Bugs
+- Clicking reset will not work if it hasnt been run
+    - Will also brick the window
+- X ing the control panel leaves you with no option but to quit and restart
+- The file converter will have either the right hand side not filled in or the bottom. Breaks some patterns
+    - Not all paterns are designed for a looping world
 
