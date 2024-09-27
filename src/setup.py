@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from presets import Presets
+from src.presets import Presets
 import os
 
 

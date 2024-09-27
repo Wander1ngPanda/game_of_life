@@ -1,13 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, simpledialog
-from presets import Presets
+from src.presets import Presets
 import json
 import os
-from game import Game
+from src.game import Game
 
 class UI():
     def __init__(self, game, cell_size, ruleset_path):
-        #Useful Variables
+        self.game_window = tk.Tk()
+
         self.X = game.x
         self.Y = game.y
         self.cell_size = cell_size
@@ -15,18 +16,13 @@ class UI():
         self.game_loop = None
         self.selecting = False
         self.informed = False
+        self.after_ids = []
 
         self.ruleset_path = ruleset_path
         self.presets = Presets()
         self.presets.parse_rules(ruleset_path)
         self.ruleset_title = self.presets.rules['title']
-        
 
-        #UI Architecture - Main Game Window
-        self.game_window = tk.Tk()
-        self.game_window.title("Conway's Game of Life")
-
-        #UI Architecture - Control Panel
         self.controller_window = tk.Toplevel(self.game_window)
         self.ruleset_options = tk.StringVar()
         self.pattern_options = tk.StringVar()
@@ -110,8 +106,8 @@ class UI():
                 self.informed = True
 
         finally:
-            self.game_window.after(1000, self.reset_selecting)
-            self.game_window.after(10000, self.reset_informed)
+            self.after_ids.append(self.game_window.after(1000, self.reset_selecting))
+            self.after_ids.append(self.game_window.after(10000, self.reset_informed))
         
     
     def reset_selecting(self):
@@ -126,6 +122,7 @@ class UI():
         if self.game_loop:
             self.start_game_button["state"] = "disabled"
         self.game_loop = self.game_window.after(50, self.start_game)
+        self.after_ids.append(self.game_loop)
 
     def pause_game(self):
         if self.game_loop:
@@ -153,6 +150,7 @@ class UI():
                 self.game_canvas.itemconfig(cell, fill='black')
                 
     def set_preset_rules(self, event):
+        self.pause_game()
         try:
             if type(event) == str:
                 ruleset_options = event
@@ -204,8 +202,13 @@ class UI():
         x = self.presets.pattern['width']
         y = self.presets.pattern['height']
         cell_size = self.presets.pattern['cell_size']
-        self.game_window.destroy()
+        self.safe_destroy()
         UI(Game(x, y, alive), cell_size, self.presets.pattern['ruleset'])
+
+    def safe_destroy(self):
+        for process in self.after_ids:
+            self.game_window.after_cancel(process)
+        self.game_window.destroy()
 
         
         

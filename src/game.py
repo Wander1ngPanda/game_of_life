@@ -17,8 +17,6 @@ class Game():
             grid[coord] = None
         return grid
     
-
-    #TODO: Implement a switch to turn on or off world wrapping
     def get_neighbours(self, coord):
         x, y = coord
         neighbours = [(x - 1, y - 1), (x - 1, y), (x - 1, y + 1), (x, y - 1), 
@@ -46,7 +44,6 @@ class Game():
         for value in neighbours:
             if value in self.alive:
                 alive_count += 1
-        
         return self.ruleset[alive_count]
     
     def grid_tick(self):
@@ -65,6 +62,3 @@ class Game():
             self.tick_scope.add(coord)
             for neighbour in self.get_neighbours(coord):
                 self.tick_scope.add(neighbour)
-
-    def update_rules(self):
-        pass
