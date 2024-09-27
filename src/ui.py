@@ -175,6 +175,10 @@ class UI():
         return os.listdir('presets/patterns/')
     
     def get_game_info(self):
+        if not self.ruleset_path:
+            self.ruleset_path = 'default.json'
+
+        print(self.ruleset_path)
         return {
             'width': self.X,
             'height': self.Y,
@@ -188,7 +192,7 @@ class UI():
         data = self.get_game_info()
         path = 'presets/patterns/'
         file_name = simpledialog.askstring(title='Pattern Title', prompt='Name Pattern:')
-        if file_name not in self.get_avaliable_rulesets() and len(file_name.strip()) > 0:
+        if file_name and file_name not in self.get_avaliable_rulesets() and len(file_name.strip()) > 0:
             data['pattern_name'] = file_name
             full_path = path + file_name + '.json'
             with open(full_path, 'w') as o:
