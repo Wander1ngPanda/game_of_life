@@ -2,7 +2,8 @@
 
 ### Notes:
 
-This is a functioning version of the game of life.
+This is a functioning version of the game of life. (The cellular automata, not the boardgame)
+https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
 It is a little bit buggy and almost entirely untested
 
 - run the code with: python main.py
