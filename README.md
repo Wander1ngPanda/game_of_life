@@ -5,9 +5,15 @@
 This is a functioning version of the game of life.
 It is a little bit buggy and almost entirely untested
 
+- run the code with: python main.py
+- Import pre-generated patterns from https://conwaylife.com/patterns/ using: python pattern_converter.py <url>
+    - Note. Will only work with .cells files
+    - eg: python pattern_converter.py https://conwaylife.com/patterns/101.cells
+
 The initial screen lets you choose the dimensions and cell size for the game
 - The Height and Width is in cells
 - The cell_size describes how large each cell should be, 1 is almost invisible, 20 is a nice size
+- Not inputting any values will default to 60x40x20
 
 The control panel lets the game run
 - Play will run continuously
